@@ -27,7 +27,8 @@ router.post('/register', async (req: Request, res: Response) => {
                     email,
                     username,
                     password: hashedPassword,
-                    schoolId
+                    schoolId,
+                    schoolEmail: email
                 }
             }) : await prisma.user.create({
                 data: {
@@ -39,9 +40,30 @@ router.post('/register', async (req: Request, res: Response) => {
         
         console.log('Registered user:', user);
 
+        // Add proper error handling for email verification
+        try {
+            const emailVerification = await fetch('http://localhost:5001/api/email/send', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ userId: user.id }),
+            });
+            
+            if (emailVerification.ok) {
+                console.log('Email verification sent successfully');
+            } else {
+                console.error('Failed to send verification email:', await emailVerification.text());
+            }
+        } catch (emailError) {
+            console.error('Email verification error:', emailError);
+            // Don't fail registration if email fails
+        }
+
         const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET!, { expiresIn: '7d' });
         res.json({ token, user: { id: user.id, username: user.username } });
     } catch (error) {
+        console.error('Registration error:', error);
         res.status(400).json({error: 'User already exists'});
     }
 });

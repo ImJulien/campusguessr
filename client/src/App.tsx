@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import './App.css'
 import LandingPage from './pages/LandingPage'
+import VerifyEmailPage from './pages/VerifyEmailPage'
 
 function App() {
   const [status, setStatus] = useState('Loading...')
@@ -15,11 +16,11 @@ function App() {
 
   return (
     <div>
-      <h1>Title</h1>
       <p>Server Status: {status}</p>
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<LandingPage />} />
+          <Route path="/verify" element={<VerifyEmailPage />} />
         </Routes>
     </BrowserRouter>
     </div>
