@@ -40,23 +40,45 @@ router.get('/verify', async (req: Request, res: Response) => {
     const { token } = req.query;
     console.log('Verification token received:', token);
 
+    if (!token) {
+        return res.status(400).json({ error: 'Verification token is required' });
+    }
+
     const user = await prisma.user.findFirst({
-        where: { verificationToken: token as string }
+        where: { verificationToken: token as string },
+        include: { school: true }
     });
     console.log('User found for verification:', user);
 
     if (!user) {
-        return res.status(400).json({ error: 'Invalid token' });
+        return res.status(400).json({ error: 'Invalid or expired verification token' });
     }
 
-    const schoolConfirmed = user.schoolEmail ? true : false;
+    if (user.emailVerified) {
+        return res.status(200).json({ message: 'Email already verified', user: { emailVerified: true, school: user.school } });
+    }
+
+    // Check if this is a school email and update verification accordingly
+    const schoolConfirmed = user.school ? true : false;
     console.log('School email confirmed:', schoolConfirmed);
 
     await prisma.user.update({
         where: { id: user.id },
-        data: { emailVerified: true, verificationToken: null, studentVerified: schoolConfirmed }
+        data: { 
+            emailVerified: true, 
+            verificationToken: null, 
+            studentVerified: schoolConfirmed 
+        }
     });
-    res.json({ message: `Email${schoolConfirmed ? '/Student' : ''} verified` });
+
+    res.json({ 
+        message: `Email${schoolConfirmed ? ' and student status' : ''} verified successfully!`,
+        user: {
+            emailVerified: true,
+            studentVerified: schoolConfirmed,
+            school: user.school
+        }
+    });
 });
 
 export default router;

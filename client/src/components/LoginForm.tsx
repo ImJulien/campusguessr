@@ -2,10 +2,11 @@ import { useState, type FormEvent } from 'react'
 import './LoginForm.css'
 
 interface LoginFormProps {
-  onSubmit: (email: string, username: string, password: string) => void
+  onSubmit: (email: string, username: string, password: string) => void;
+  isLoginMode: boolean;
 }
 
-const LoginForm: React.FC<LoginFormProps> = ({ onSubmit }) => {
+const LoginForm: React.FC<LoginFormProps> = ({ onSubmit, isLoginMode }) => {
   const [email, setEmail] = useState('')
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
@@ -18,7 +19,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSubmit }) => {
   return (
     <div className="login-container">
       <form onSubmit={handleSubmit} className="login-form">
-        <h2>Login</h2>
+        <h2>{isLoginMode ? 'Login' : 'Register'}</h2>
         
         <div className="form-group">
           <label htmlFor="email">Email</label>
@@ -31,16 +32,18 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSubmit }) => {
           />
         </div>
 
-        <div className="form-group">
-          <label htmlFor="username">Username</label>
-          <input
-            type="text"
-            id="username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            required
-          />
-        </div>
+        {!isLoginMode && (
+          <div className="form-group">
+            <label htmlFor="username">Username</label>
+            <input
+              type="text"
+              id="username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
+            />
+          </div>
+        )}
 
         <div className="form-group">
           <label htmlFor="password">Password</label>
@@ -54,7 +57,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSubmit }) => {
         </div>
 
         <button type="submit" className="submit-button">
-          Register
+          {isLoginMode ? 'Login' : 'Register'}
         </button>
       </form>
     </div>

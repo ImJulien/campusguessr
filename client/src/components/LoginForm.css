@@ -1,9 +1,38 @@
 .login-container {
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   background-color: black;
   min-width: 30vw;
+  padding: 2rem;
+}
+
+.auth-toggle {
+  display: flex;
+  margin-bottom: 2rem;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.auth-toggle button {
+  padding: 1rem 2rem;
+  border: none;
+  background-color: #f8f9fa;
+  color: #666;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 1rem;
+}
+
+.auth-toggle button.active {
+  background-color: #007bff;
+  color: white;
+}
+
+.auth-toggle button:hover:not(.active) {
+  background-color: #e9ecef;
 }
 
 .login-form {
