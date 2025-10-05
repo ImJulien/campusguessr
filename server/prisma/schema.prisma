@@ -69,24 +69,15 @@ model Game {
 }
 
 model Score {
-  id         String    @id @default(uuid())
-  gameId     String
-  game       Game      @relation(fields: [gameId], references: [id])
-  playerId   String
-  player     User      @relation(fields: [playerId], references: [id])
-  locationId String?
-  location   Location? @relation(fields: [locationId], references: [id])
-  
-  actualLat  Float
-  actualLng  Float
-  guessLat   Float?
-  guessLng   Float?
-  
-  distance   Float
-  points     Int
-  time       Int
-  createdAt  DateTime  @default(now())
-
-  @@index([gameId])
-  @@index([playerId])
+  id          String   @id @default(uuid())
+  game        Game     @relation(fields: [gameId], references: [id])
+  gameId      String
+  location    Location @relation(fields: [locationId], references: [id])
+  locationId  String
+  player      User     @relation(fields: [playerId], references: [id])
+  playerId    String
+  distance    Float // how far from correct location
+  points      Int
+  time        Int
+  createdAt   DateTime @default(now())
 }
