@@ -15,24 +15,23 @@ datasource db {
 }
 
 model User {
-  id              String    @id       @default(uuid())
-  publicId        Int       @unique   @default(autoincrement())
-  email           String    @unique
-  schoolEmail     String?   @unique
-  username        String    @unique
-  password        String
-  emailVerified   Boolean   @default(false)
+  id                String    @id       @default(uuid())
+  publicId          Int       @unique   @default(autoincrement())
+  email             String    @unique
+  schoolEmail       String?   @unique
+  username          String    @unique
+  password          String
+  emailVerified     Boolean   @default(false)
   verificationToken String? @unique
-  school          School?   @relation(fields: [schoolId], references: [id])
-  schoolId        String?
-  studentVerified Boolean   @default(false)
-  isPremium       Boolean   @default(false)
-  xp              Int       @default(0)
-  level           Int       @default(1)
-  createdAt       DateTime  @default(now())
+  school            School?   @relation(fields: [schoolId], references: [id])
+  schoolId          String?
+  studentVerified   Boolean   @default(false)
+  isPremium         Boolean   @default(false)
+  xp                Int       @default(0)
+  level             Int       @default(1)
+  createdAt         DateTime  @default(now())
 
   games  Game[]
-  scores Score[] 
 }
 
 model School {
@@ -43,19 +42,6 @@ model School {
   badge     String // url to badge image or icon
   
   users     User[]
-  locations Location[]
-}
-
-model Location {
-  id          String   @id @default(uuid())
-  name        String
-  latitude    Float
-  longitude   Float
-  imageUrl    String
-  school      School   @relation(fields: [schoolId], references: [id])
-  schoolId    String
-  
-  scores      Score[]
 }
 
 model Game {
@@ -64,20 +50,20 @@ model Game {
   playerId    String
   startedAt   DateTime  @default(now())
   completedAt DateTime?
+  grade       String?
+  xpEarned    Int?
   
   scores      Score[]
 }
 
 model Score {
-  id          String   @id @default(uuid())
-  game        Game     @relation(fields: [gameId], references: [id])
-  gameId      String
-  location    Location @relation(fields: [locationId], references: [id])
-  locationId  String
-  player      User     @relation(fields: [playerId], references: [id])
-  playerId    String
-  distance    Float // how far from correct location
-  points      Int
-  time        Int
-  createdAt   DateTime @default(now())
+  id              String   @id @default(uuid())
+  game            Game     @relation(fields: [gameId], references: [id])
+  gameId          String
+  distance        Float
+  points          Int
+  timeLeft        Int
+  roundNumber     Int
+  actualLocation  Int[]
+  guessedLocation Int[]
 }
