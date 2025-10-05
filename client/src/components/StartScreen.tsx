@@ -134,7 +134,7 @@ const StartScreen: React.FC<StartScreenProps> = ({ onStart, onOpenSettings, user
           audioManager.playHover();
         }} onMouseLeave={handleAccountLeave}>
           <button className="account-button" onClick={() => audioManager.playClick()}>
-            <span className="account-icon">👤</span>
+            <span className="account-icon"></span>
             {user ? user.username : 'Account'}
           </button>
           <ErrorBoundary>
@@ -154,7 +154,7 @@ const StartScreen: React.FC<StartScreenProps> = ({ onStart, onOpenSettings, user
             audioManager.playHover();
           }} onMouseLeave={handleRecentGamesLeave}>
             <button className="recent-games-button" onClick={() => audioManager.playClick()}>
-              📊 Recent Games
+              Recent Games
             </button>
             
             <RecentGamesDropdown 
