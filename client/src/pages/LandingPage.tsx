@@ -1,5 +1,5 @@
 const LandingPage: React.FC = () => {
-    return (<body></body>);
+    return (<div></div>);
 };
 
 export default LandingPage;
