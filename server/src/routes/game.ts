@@ -5,9 +5,7 @@ import axios from 'axios';
 const prisma = new PrismaClient();
 const router = express.Router();
 
-console.log('Google Maps API Key loaded:', process.env.GOOGLE_MAPS_API_KEY ? 'YES' : 'NO');
-
-// Campus bounds
+// Campus bounds (from the local version's locations.js)
 const campusBounds: Record<string, {
   north: number;
   south: number;
@@ -29,8 +27,10 @@ const campusBounds: Record<string, {
     east: -122.9080,
     west: -122.9280
   },
+  // Add more campuses...
 };
 
+// Generate random location within campus bounds
 function generateRandomLocation(campus: string) {
   const bounds = campusBounds[campus];
   if (!bounds) return null;
@@ -41,80 +41,54 @@ function generateRandomLocation(campus: string) {
   return { lat, lng };
 }
 
+// Check if Street View exists at location using Google Maps API
 async function hasStreetView(lat: number, lng: number): Promise<boolean> {
   try {
-    const url = `https://maps.googleapis.com/maps/api/streetview/metadata?location=${lat},${lng}&radius=100&key=${process.env.GOOGLE_MAPS_API_KEY}`;
-    
-    console.log('Checking Street View URL:', url);
-    
-    const response = await axios.get(url);
-    
-    console.log('Street View API Response:', response.data);
+    const response = await axios.get(
+      `https://maps.googleapis.com/maps/api/streetview/metadata?location=${lat},${lng}&radius=100&key=${process.env.GOOGLE_MAPS_API_KEY}`
+    );
     
     return response.data.status === 'OK';
   } catch (error) {
-    console.error('Street View API Error:', error); 
     return false;
   }
 }
 
+// Generate valid location with Street View coverage
 async function generateValidLocation(campus: string, maxAttempts = 20) {
   for (let i = 0; i < maxAttempts; i++) {
     const location = generateRandomLocation(campus);
     if (!location) continue;
 
-    console.log(`Attempt ${i + 1}: Checking ${location.lat}, ${location.lng}`);
-
     const hasView = await hasStreetView(location.lat, location.lng);
-    console.log(`Has Street View: ${hasView}`);
-    
     if (hasView) {
-      console.log('✅ Valid location found!');
       return location;
     }
   }
   
-  console.log('⚠️ No valid location found, using fallback');
+  // Fallback to campus center if no valid location found
   const bounds = campusBounds[campus];
-  
-  // Add null check
-  if (!bounds) {
-    console.error(`❌ Campus '${campus}' not found in campusBounds`);
-    // Default to SFU
-    return {
-      lat: 49.2781,
-      lng: -122.9199
-    };
-  }
-  
   return {
     lat: (bounds.north + bounds.south) / 2,
     lng: (bounds.east + bounds.west) / 2
   };
 }
 
-// Temporary in-memory storage
-const gameLocations = new Map<string, {
-  currentRound: number;
-  totalRounds: number;
-  campus: string;
-  currentLocation: { lat: number; lng: number };
-  allLocations: Array<{ lat: number; lng: number }>;
-}>();
-
 // Start a new game
 router.post('/start', async (req: Request, res: Response) => {
   const { userId, campus = 'ubc', rounds = 5 } = req.body;
-  
-  console.log('Starting game with campus:', campus);
 
   try {
+    // Create new game
     const game = await prisma.game.create({
       data: { playerId: userId }
     });
 
+    // Generate first random location with Street View
     const location = await generateValidLocation(campus);
 
+    // Store location in session/game (don't send coordinates to client!)
+    // For now, we'll store in a temporary map (use Redis in production)
     gameLocations.set(game.id, {
       currentRound: 1,
       totalRounds: rounds,
@@ -128,6 +102,7 @@ router.post('/start', async (req: Request, res: Response) => {
       currentRound: 1,
       totalRounds: rounds,
       campus,
+      // DON'T send coordinates - client will load Street View separately
     });
   } catch (error) {
     console.error('Error starting game:', error);
@@ -135,7 +110,16 @@ router.post('/start', async (req: Request, res: Response) => {
   }
 });
 
-// Get Street View location
+// Temporary in-memory storage (use Redis in production)
+const gameLocations = new Map<string, {
+  currentRound: number;
+  totalRounds: number;
+  campus: string;
+  currentLocation: { lat: number; lng: number };
+  allLocations: Array<{ lat: number; lng: number }>;
+}>();
+
+// Get Street View location for current round (without revealing coordinates)
 router.get('/:gameId/streetview', async (req: Request, res: Response) => {
   const { gameId } = req.params;
 
@@ -144,16 +128,20 @@ router.get('/:gameId/streetview', async (req: Request, res: Response) => {
     return res.status(404).json({ error: 'Game not found' });
   }
 
+  // Return Street View URL without coordinates
   const { lat, lng } = gameData.currentLocation;
   
   res.json({
+    // Client will use this to load Street View
+    streetViewUrl: `https://maps.googleapis.com/maps/api/streetview?size=600x400&location=${lat},${lng}&key=${process.env.GOOGLE_MAPS_API_KEY}`,
+    // Or return lat/lng for client-side Street View component
     location: { lat, lng }
   });
 });
 
 // Submit a guess
 router.post('/guess', async (req: Request, res: Response) => {
-  const { gameId, guessLat, guessLng, timeTaken } = req.body;
+  const { gameId, guessLat, guessLng, userId, timeTaken } = req.body;
 
   try {
     const gameData = gameLocations.get(gameId);
@@ -161,7 +149,7 @@ router.post('/guess', async (req: Request, res: Response) => {
       return res.status(404).json({ error: 'Game not found' });
     }
 
-    const { currentLocation, currentRound } = gameData;
+    const { currentLocation } = gameData;
 
     // Calculate distance
     const distance = calculateDistance(
@@ -174,16 +162,18 @@ router.post('/guess', async (req: Request, res: Response) => {
     // Calculate points
     const points = calculateScore(distance, timeTaken);
 
-    // Save score - ONLY fields that exist in your schema
+    // Save score - SIMPLE VERSION
     await prisma.score.create({
       data: {
         gameId,
+        playerId: userId,
+        actualLat: currentLocation.lat,
+        actualLng: currentLocation.lng,
+        guessLat,
+        guessLng,
         distance,
         points,
-        timeLeft: Math.max(0, 60 - timeTaken),
-        roundNumber: currentRound,
-        actualLocation: [currentLocation.lat, currentLocation.lng],
-        guessedLocation: [guessLat, guessLng],
+        time: timeTaken,
       },
     });
 
@@ -205,7 +195,7 @@ router.post('/guess', async (req: Request, res: Response) => {
   }
 });
 
-// Next round
+// Next round - generate new location
 router.post('/:gameId/next-round', async (req: Request, res: Response) => {
   const { gameId } = req.params;
 
@@ -215,14 +205,15 @@ router.post('/:gameId/next-round', async (req: Request, res: Response) => {
       return res.status(404).json({ error: 'Game not found' });
     }
 
+    // Check if game is complete
     if (gameData.currentRound >= gameData.totalRounds) {
       return res.status(400).json({ error: 'Game already complete' });
     }
 
+    // Generate new random location
     const newLocation = await generateValidLocation(gameData.campus);
-    
-    console.log('New location generated:', newLocation);
 
+    // Update game data
     gameData.currentRound++;
     gameData.currentLocation = newLocation;
     gameData.allLocations.push(newLocation);
@@ -250,20 +241,17 @@ router.post('/:gameId/complete', async (req: Request, res: Response) => {
     const totalPoints = scores.reduce((sum, score) => sum + score.points, 0);
     const totalDistance = scores.reduce((sum, score) => sum + score.distance, 0);
 
-    // Update game - only completedAt (remove xpEarned)
     await prisma.game.update({
       where: { id: gameId },
-      data: { 
-        completedAt: new Date()
-      }
+      data: { completedAt: new Date() }
     });
 
-    // Update user XP
     await prisma.user.update({
       where: { id: userId },
       data: { xp: { increment: totalPoints } }
     });
 
+    // Clean up game data
     gameLocations.delete(gameId);
 
     res.json({
