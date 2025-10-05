@@ -1,0 +1,468 @@
+.start-screen {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  position: relative;
+  overflow: hidden;
+}
+
+.app-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 40px;
+  background-color: rgba(0, 0, 0, 0.3);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  z-index: 100;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  height: 70px;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+}
+
+.header-right {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+.account-button {
+  background-color: transparent;
+  color: white;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  padding: 8px 20px;
+  font-size: 1rem;
+  font-weight: 500;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: transform 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.account-button:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: translateY(-1px);
+}
+
+.account-icon {
+  font-size: 1.2rem;
+}
+
+.signin-button {
+  background-color: transparent;
+  color: white;
+  border: 2px solid white;
+  padding: 8px 25px;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: transform 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+}
+
+.signin-button:hover {
+  background-color: white;
+  color: #667eea;
+  transform: translateY(-1px);
+}
+
+.signup-button {
+  background-color: #4ecca3;
+  color: #16213e;
+  border: 2px solid #4ecca3;
+  padding: 8px 25px;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: transform 0.15s ease, background-color 0.15s ease;
+}
+
+.signup-button:hover {
+  background-color: #45b393;
+  border-color: #45b393;
+  transform: translateY(-1px);
+}
+
+.account-button:active,
+.signin-button:active,
+.signup-button:active {
+  transform: translateY(0);
+}
+
+.start-content {
+  text-align: center;
+  padding: 20px 40px;
+  max-width: 1000px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 90px;
+}
+
+.title {
+  font-size: 3.5rem;
+  margin-bottom: 10px;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.subtitle {
+  font-size: 1.3rem;
+  margin-bottom: 30px;
+  opacity: 0.9;
+}
+
+.info-box {
+  background-color: rgba(255, 255, 255, 0.1);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  border-radius: 15px;
+  padding: 20px 25px;
+  text-align: left;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.info-box h2 {
+  margin-bottom: 12px;
+  font-size: 1.5rem;
+}
+
+.info-box ul {
+  list-style: none;
+  margin-bottom: 0;
+}
+
+.info-box li {
+  margin-bottom: 8px;
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+.selectors-row {
+  display: flex;
+  gap: 30px;
+  width: 100%;
+  margin-bottom: 20px;
+  align-items: flex-start;
+}
+
+.selectors-column {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.game-mode-selector {
+  width: 100%;
+}
+
+.mode-options {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  align-items: stretch;
+}
+
+.mode-button {
+  flex: 1;
+  max-width: 220px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  padding: 15px 20px;
+  border-radius: 15px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  text-align: center;
+}
+
+.mode-button:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: translateY(-2px);
+}
+
+.mode-button.active {
+  background-color: rgba(78, 204, 163, 0.3);
+  border-color: #4ecca3;
+  box-shadow: 0 0 15px rgba(78, 204, 163, 0.4);
+}
+
+.mode-name {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: white;
+}
+
+.mode-description {
+  font-size: 0.85rem;
+  opacity: 0.9;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.start-button {
+  background-color: #ff6b6b;
+  color: white;
+  border: none;
+  padding: 18px 60px;
+  font-size: 1.5rem;
+  font-weight: bold;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.start-button:hover {
+  background-color: #ff5252;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+.start-button:active {
+  transform: translateY(0);
+}
+
+.campus-selector {
+  margin-top: 15px;
+  margin-bottom: 15px;
+  width: 100%;
+}
+
+.selector-title {
+  font-size: 1.2rem;
+  margin-bottom: 12px;
+  text-align: center;
+  color: white;
+}
+
+.carousel-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  position: relative;
+}
+
+.carousel-arrow {
+  background-color: rgba(255, 255, 255, 0.2);
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  color: white;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  font-size: 2.5rem;
+  cursor: pointer;
+  transition: transform 0.15s ease, background-color 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  line-height: 1;
+  padding: 0;
+}
+
+.carousel-arrow:hover {
+  background-color: rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.6);
+  transform: scale(1.08);
+}
+
+.carousel-arrow:active {
+  transform: scale(0.98);
+}
+
+.campus-carousel-wrapper {
+  width: 300px;
+  overflow: hidden;
+  position: relative;
+}
+
+.campus-carousel {
+  display: flex;
+  transition: transform 0.4s ease-out;
+  will-change: transform;
+  width: 100%;
+}
+
+.campus-card {
+  background-color: transparent;
+  border: none;
+  padding: 20px;
+  cursor: pointer;
+  transition: none;
+  position: relative;
+  text-align: center;
+  min-width: 100%;
+  flex-shrink: 0;
+}
+
+.campus-card:hover .campus-icon {
+  transform: scale(1.15);
+}
+
+.campus-icon {
+  width: 150px;
+  height: 150px;
+  margin: 0 auto 12px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: white;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+  transition: transform 0.2s ease;
+}
+
+.campus-name {
+  font-size: clamp(0.8rem, 1.8vw, 1rem);
+  font-weight: 600;
+  color: white;
+  line-height: 1.3;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: 0 10px;
+  text-align: center;
+}
+
+.campus-indicator {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 15px;
+}
+
+.indicator-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.3);
+  cursor: pointer;
+  transition: transform 0.15s ease, background-color 0.15s ease;
+}
+
+.indicator-dot:hover {
+  background-color: rgba(255, 255, 255, 0.5);
+  transform: scale(1.15);
+}
+
+.indicator-dot.active {
+  background-color: #4ecca3;
+  width: 12px;
+  height: 12px;
+  box-shadow: 0 0 8px rgba(78, 204, 163, 0.5);
+}
+
+.start-button {
+  background-color: #ff6b6b;
+  color: white;
+  border: none;
+  padding: 15px 50px;
+  font-size: 1.3rem;
+  font-weight: bold;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: transform 0.15s ease, background-color 0.15s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  margin-top: 15px;
+}
+
+.start-button:hover {
+  background-color: #ff5252;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+}
+
+.start-button:active {
+  transform: translateY(0);
+}
+
+@media (max-width: 768px) {
+  .start-content {
+    padding: 15px 20px;
+  }
+
+  .title {
+    font-size: 2.5rem;
+  }
+
+  .subtitle {
+    font-size: 1.1rem;
+  }
+
+  .carousel-container {
+    gap: 10px;
+  }
+
+  .carousel-arrow {
+    width: 45px;
+    height: 45px;
+    font-size: 2rem;
+  }
+
+  .campus-carousel-wrapper {
+    width: 200px;
+  }
+
+  .campus-card {
+    padding: 15px;
+  }
+
+  .campus-icon {
+    width: 70px;
+    height: 70px;
+    font-size: 1.5rem;
+  }
+
+  .campus-name {
+    font-size: 0.9rem;
+  }
+
+  .info-box {
+    padding: 15px 20px;
+  }
+
+  .info-box h2 {
+    font-size: 1.3rem;
+  }
+
+  .info-box li {
+    font-size: 0.85rem;
+  }
+
+  .mode-options {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .mode-button {
+    max-width: 100%;
+  }
+}
