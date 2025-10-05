@@ -9,16 +9,36 @@ const router = express.Router();
 
 // Registration function
 router.post('/register', async (req: Request, res: Response) => {
-    const {email,username,password} = req.body;
+    const {email,username,password}: {email: string; username: string; password: string} = req.body;
+    const domain = email.match(/@(?:[^.]+\.)*([^.]+\.[^.]+)$/)?.[1];
+
+    const domains = await prisma.school.findFirst({
+        where: { domain }
+    });
+    console.log('Domain: ', {domains});
+
+    const schoolId = domains ? domains.id : null;
+    console.log('School ID: ', schoolId);
+
     try {
         const hashedPassword = await bcrypt.hash(password, 10);
-        const user = await prisma.user.create({
-            data: {
-                email,
-                username,
-                password: hashedPassword
-            }
-        });
+        const user = schoolId ? await prisma.user.create({
+                data: {
+                    email,
+                    username,
+                    password: hashedPassword,
+                    schoolId
+                }
+            }) : await prisma.user.create({
+                data: {
+                    email,
+                    username,
+                    password: hashedPassword
+                }
+            });
+        
+        console.log('Registered user:', user);
+
         const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET!, { expiresIn: '7d' });
         res.json({ token, user: { id: user.id, username: user.username } });
     } catch (error) {
