@@ -62,6 +62,7 @@ model Game {
   id          String    @id @default(uuid())
   player      User      @relation(fields: [playerId], references: [id])
   playerId    String
+  campus      String?   // Track which campus was played
   startedAt   DateTime  @default(now())
   completedAt DateTime?
   

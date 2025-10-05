@@ -3,6 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import authRoutes from './routes/auth';
 import verifyEmailRoutes from './routes/verify-email'; 
+import dbRoutes from './routes/db';
 
 dotenv.config();
 
@@ -14,6 +15,7 @@ app.use(express.json());
 
 app.use('/api/auth', authRoutes);
 app.use('/api/email', verifyEmailRoutes); 
+app.use('/api/db', dbRoutes);
 
 app.get('/', (req: Request, res: Response) => {
   res.send('Root works!');
