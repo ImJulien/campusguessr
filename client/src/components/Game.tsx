@@ -174,6 +174,9 @@ function Game({ gameId, userId, campus, currentRound, totalRounds, gameMode, onG
       setResult(null);
       setShowResult(false);
       setTimeRemaining(60);
+      
+      // ← ADD THIS: Fetch the new Street View location
+      await fetchStreetViewLocation();
     } catch (error) {
       console.error('Error getting next round:', error);
     }
@@ -240,7 +243,11 @@ function Game({ gameId, userId, campus, currentRound, totalRounds, gameMode, onG
 
       <div className="game-layout">
         <div className="streetview-container">
-          <StreetViewPanel location={streetViewLocation} gameMode={gameMode} />
+          <StreetViewPanel 
+            key={`streetview-${round}-${streetViewLocation?.lat}`}
+            location={streetViewLocation} 
+            gameMode={gameMode} 
+          />
         </div>
 
         <div className="map-wrapper">
